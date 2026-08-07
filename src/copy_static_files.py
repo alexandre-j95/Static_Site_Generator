@@ -2,10 +2,11 @@ import os
 import shutil
 
 
-# Function that prepares the destination directory and calls a helper to copy each file from source
+# Function that prepares the destination directory and calls a helper to copy
+# each file from source
 def copy_files(source: str, destination: str) -> None:
     if not os.path.exists(source):
-        raise ValueError("invalide source folder")
+        raise ValueError("invalid source folder")
 
     if os.path.exists(destination):
         print(f"Removing directory {destination}")
@@ -20,7 +21,7 @@ def copy_files_helper(source: str, destination: str) -> None:
     for node in nodes:
         path = os.path.join(source, node)
         if os.path.isfile(path):
-            print(f"Copying {path} to destination")
+            print(f"Copying {path} to {destination}")
             shutil.copy(path, destination)
         else:
             copy_files_helper(path, os.path.join(destination, node))

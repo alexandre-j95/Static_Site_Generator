@@ -5,6 +5,7 @@ from markdown_blocks import (
     block_to_block_type,
     BlockType,
     markdown_to_html_node,
+    extract_title,
 )
 
 
@@ -163,6 +164,28 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+
+    def test_extract_title_basic(self):
+        markdown = "# Some Title"
+        result = extract_title(markdown)
+        self.assertEqual(result, "Some Title")
+
+    def test_extract_title_more_content(self):
+        markdown = """# Some Title
+        More Content 
+        1. And even an ordered list"""
+        result = extract_title(markdown)
+        self.assertEqual(result, "Some Title")
+
+    def test_extract_title_extra_whitespace(self):
+        markdown = "#     Some Title   "
+        result = extract_title(markdown)
+        self.assertEqual(result, "Some Title")
+
+    def test_no_title_raises(self):
+        markdown = "##Where title gone?"
+        with self.assertRaises(Exception):
+            extract_title(markdown)
 
 
 if __name__ == "__main__":

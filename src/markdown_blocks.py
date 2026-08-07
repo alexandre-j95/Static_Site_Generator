@@ -56,8 +56,8 @@ def block_to_block_type(block: str) -> BlockType:
 
 
 def markdown_to_html_node(markdown: str) -> ParentNode:
-    children = []
     blocks = markdown_to_blocks(markdown)
+    children = []
     for block in blocks:
         html_node = block_to_html_node(block)
         children.append(html_node)
@@ -108,7 +108,7 @@ def heading_to_html_node(block: str) -> HTMLNode:
             break
     if level + 1 >= len(block):
         raise ValueError(f"invalid heading level: {level}")
-    text = block[level + 1 :]
+    text = block[(level + 1) :]
     children = text_to_children(text)
     return ParentNode(f"h{level}", children)
 
@@ -123,28 +123,7 @@ def code_to_html_node(block: str) -> HTMLNode:
     return ParentNode("pre", [code])
 
 
-def quote_to_html_node(block: str) -> HTMLNode:
-    items = block.split("\n")
-    html_items = []
-    for item in items:
-        parts = item.split(". ", 1)
-        text = parts[1]
-        children = text_to_children(text)
-        html_items.append(ParentNode("li", children))
-    return ParentNode("ol", html_items)
-
-
-def ordered_list_to_html_node(block: str) -> HTMLNode:
-    items = block.split("\n")
-    html_items = []
-    for item in items:
-        text = item[2:]
-        children = text_to_children(text)
-        html_items.append(ParentNode("li", children))
-    return ParentNode("ul", html_items)
-
-
-def unordered_list_to_html_node(block: str) -> HTMLNode:
+def quote_to_html_node(block: str) -> ParentNode:
     lines = block.split("\n")
     new_lines = []
     for line in lines:
@@ -154,3 +133,35 @@ def unordered_list_to_html_node(block: str) -> HTMLNode:
     content = " ".join(new_lines)
     children = text_to_children(content)
     return ParentNode("blockquote", children)
+
+
+def ordered_list_to_html_node(block: str) -> HTMLNode:
+    items = block.split("\n")
+    html_items = []
+    for item in items:
+        text = item.split(". ", 1)[1]
+        children = text_to_children(text)
+        html_items.append(ParentNode("li", children))
+    return ParentNode("ol", html_items)
+
+
+def unordered_list_to_html_node(block: str) -> ParentNode:
+    items = block.split("\n")
+    html_items = []
+    for item in items:
+        text = item[2:]
+        children = text_to_children(text)
+        html_items.append(ParentNode("li", children))
+    return ParentNode("ul", html_items)
+
+
+def extract_title(markdown: str) -> str:
+    lines = markdown.split("\n")
+    result = ""
+    for line in lines:
+        if line.startswith("# "):
+            result += line[1:].strip()
+            break
+    if result == "":
+        raise Exception("no title found")
+    return result
